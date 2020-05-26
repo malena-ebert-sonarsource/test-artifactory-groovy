@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'com.jfrog.artifactory' version '4.15.1'
+}
+
+group 'org.example'
+version '1.0.2'
+
+repositories {
+    mavenCentral()
+}
+
+artifactory {
+    setContextUrl("http://localhost:8081/artifactory")
+
+    publish {
+        repository {
+            repoKey = "libs-release-local"
+            username = "admin"
+            password = "12qwasyx"
+        }
+
+        defaults {
+            publishPom = true
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenArtifact(MavenPublication) {
+            from(components["java"])
+        }
+    }
+}
+
+tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+}
+
+tasks.artifactoryPublish {
+    publishPom = false
+    publications(publishing.publications.mavenArtifact)
+}
